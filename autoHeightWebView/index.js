@@ -10,6 +10,15 @@ import { WebView } from 'react-native-webview';
 
 import { reduceData, getWidth, isSizeChanged, shouldUpdate } from './utils';
 
+const isJson = (str) => {
+  try {
+      JSON.parse(str);
+  } catch (e) {
+      return false;
+  }
+  return true;
+}
+
 const AutoHeightWebView = React.memo(
   forwardRef((props, ref) => {
     const { style, onMessage, onSizeUpdated, source } = props;
@@ -36,6 +45,9 @@ const AutoHeightWebView = React.memo(
       if (!event.nativeEvent) {
         return;
       }
+      if (!isJson(event.nativeEvent.data)) {
+        return;
+      }
       let data = {};
       // Sometimes the message is invalid JSON, so we ignore that case
       try {
@@ -54,7 +66,6 @@ const AutoHeightWebView = React.memo(
     };
 
     const { currentSource, script } = reduceData(props);
-
     const { width, height } = size;
     useEffect(
       () =>
